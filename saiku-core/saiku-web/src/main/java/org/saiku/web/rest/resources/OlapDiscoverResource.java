@@ -59,6 +59,7 @@ public class OlapDiscoverResource implements Serializable {
      */
     @GET
     @Produces({"application/json" })
+    @Path("/{agencyid}")
      public List<SaikuConnection> getConnections() {
     	try {
 			return olapDiscoverService.getAllConnections();
