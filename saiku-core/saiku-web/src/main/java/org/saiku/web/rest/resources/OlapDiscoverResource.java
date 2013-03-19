@@ -59,9 +59,10 @@ public class OlapDiscoverResource implements Serializable {
      */
     @GET
     @Produces({"application/json" })
-    @Path("/{agencyid}")
-     public List<SaikuConnection> getConnections() {
+    @Path("/{agency}")
+     public List<SaikuConnection> getConnections( @PathParam("agency") Integer agency ) {
     	try {
+      log.warn("Entrer");
 			return olapDiscoverService.getAllConnections();
 		} catch (Exception e) {
 			log.error(this.getClass().getName(),e);
@@ -75,8 +76,10 @@ public class OlapDiscoverResource implements Serializable {
      */
     @GET
     @Produces({"application/json" })
-    @Path("/{connection}")
-     public List<SaikuConnection> getConnections( @PathParam("connection") String connectionName) {
+    @Path("/{connection}/{agency}")
+     public List<SaikuConnection> getConnections(
+         @PathParam("connection") String connectionName,
+         @PathParam("agency") Integer agency ) {
     	try {
 			return olapDiscoverService.getConnection(connectionName);
 		} catch (Exception e) {
@@ -88,8 +91,8 @@ public class OlapDiscoverResource implements Serializable {
 
     @GET
     @Produces({"application/json" })
-  	@Path("/refresh")
-     public List<SaikuConnection> refreshConnections() {
+  	@Path("/refresh/{agency}")
+     public List<SaikuConnection> refreshConnections( @PathParam("agency") Integer agency ) {
     	try {
     		olapDiscoverService.refreshAllConnections();
 			return olapDiscoverService.getAllConnections();
@@ -101,8 +104,10 @@ public class OlapDiscoverResource implements Serializable {
     
     @GET
     @Produces({"application/json" })
-    @Path("/{connection}/refresh")
-     public List<SaikuConnection> refreshConnection( @PathParam("connection") String connectionName) {
+    @Path("/{connection}/refresh/{agency}")
+     public List<SaikuConnection> refreshConnection(
+         @PathParam("connection") String connectionName,
+         @PathParam("agency") Integer agency ) {
     	try {
 			olapDiscoverService.refreshConnection(connectionName);
 			return olapDiscoverService.getConnection(connectionName);
@@ -114,12 +119,13 @@ public class OlapDiscoverResource implements Serializable {
     
 	@GET
     @Produces({"application/json" })
-	@Path("/{connection}/{catalog}/{schema}/{cube}/dimensions")
+	@Path("/{connection}/{catalog}/{schema}/{cube}/dimensions/{agency}")
      public List<SaikuDimension> getDimensions(
     		 @PathParam("connection") String connectionName, 
     		 @PathParam("catalog") String catalogName, 
     		 @PathParam("schema") String schemaName, 
-    		 @PathParam("cube") String cubeName) 
+    		 @PathParam("cube") String cubeName,
+         @PathParam("agency") Integer agency ) 
     {
 		if ("null".equals(schemaName)) {
 			schemaName = "";
@@ -135,13 +141,14 @@ public class OlapDiscoverResource implements Serializable {
 	
 	@GET
     @Produces({"application/json" })
-	@Path("/{connection}/{catalog}/{schema}/{cube}/dimensions/{dimension}")
+	@Path("/{connection}/{catalog}/{schema}/{cube}/dimensions/{dimension}/{agency}")
      public SaikuDimension getDimension(
     		 @PathParam("connection") String connectionName, 
     		 @PathParam("catalog") String catalogName, 
     		 @PathParam("schema") String schemaName, 
     		 @PathParam("cube") String cubeName,
-    		 @PathParam("dimension") String dimensionName) 
+    		 @PathParam("dimension") String dimensionName,
+         @PathParam("agency") Integer agency) 
     {
 		if ("null".equals(schemaName)) {
 			schemaName = "";
@@ -157,12 +164,13 @@ public class OlapDiscoverResource implements Serializable {
 	
 	@GET
     @Produces({"application/json" })
-	@Path("/{connection}/{catalog}/{schema}/{cube}/dimensions/{dimension}/hierarchies")
+	@Path("/{connection}/{catalog}/{schema}/{cube}/dimensions/{dimension}/hierarchies/{agency}")
      public List<SaikuHierarchy> getDimensionHierarchies(@PathParam("connection") String connectionName, 
     		 									@PathParam("catalog") String catalogName, 
     		 									@PathParam("schema") String schemaName, 
     		 									@PathParam("cube") String cubeName, 
-    		 									@PathParam("dimension") String dimensionName) {
+    		 									@PathParam("dimension") String dimensionName,
+                          @PathParam("agency") Integer agency) {
 		if ("null".equals(schemaName)) {
 			schemaName = "";
 		}
@@ -177,13 +185,14 @@ public class OlapDiscoverResource implements Serializable {
 	
 	@GET
 	@Produces({"application/json" })
-	@Path("/{connection}/{catalog}/{schema}/{cube}/dimensions/{dimension}/hierarchies/{hierarchy}/levels")
+	@Path("/{connection}/{catalog}/{schema}/{cube}/dimensions/{dimension}/hierarchies/{hierarchy}/levels/{agency}")
 	public List<SaikuLevel> getHierarchy(@PathParam("connection") String connectionName, 
 				@PathParam("catalog") String catalogName, 
 				@PathParam("schema") String schemaName, 
 				@PathParam("cube") String cubeName, 
 				@PathParam("dimension") String dimensionName, 
-				@PathParam("hierarchy") String hierarchyName)
+				@PathParam("hierarchy") String hierarchyName,
+        @PathParam("agency") Integer agency)
 	{
 		if ("null".equals(schemaName)) {
 			schemaName = "";
@@ -203,7 +212,7 @@ public class OlapDiscoverResource implements Serializable {
 	 */
 	@GET
 	@Produces({"application/json" })
-	@Path("/{connection}/{catalog}/{schema}/{cube}/dimensions/{dimension}/hierarchies/{hierarchy}/levels/{level}")
+	@Path("/{connection}/{catalog}/{schema}/{cube}/dimensions/{dimension}/hierarchies/{hierarchy}/levels/{level}/{agency}")
 	public List<SaikuMember> getLevelMembers(
 			@PathParam("connection") String connectionName, 
 			@PathParam("catalog") String catalogName, 
@@ -211,7 +220,8 @@ public class OlapDiscoverResource implements Serializable {
 			@PathParam("cube") String cubeName, 
 			@PathParam("dimension") String dimensionName, 
 			@PathParam("hierarchy") String hierarchyName,
-			@PathParam("level") String levelName)
+			@PathParam("level") String levelName,
+      @PathParam("agency") Integer agency)
 	{
 		if ("null".equals(schemaName)) {
 			schemaName = "";
@@ -231,13 +241,14 @@ public class OlapDiscoverResource implements Serializable {
 	 */
 	@GET
 	@Produces({"application/json" })
-	@Path("/{connection}/{catalog}/{schema}/{cube}/hierarchies/{hierarchy}/rootmembers")
+	@Path("/{connection}/{catalog}/{schema}/{cube}/hierarchies/{hierarchy}/rootmembers/{agency}")
 	public List<SaikuMember> getRootMembers(
 			@PathParam("connection") String connectionName, 
 			@PathParam("catalog") String catalogName, 
 			@PathParam("schema") String schemaName, 
 			@PathParam("cube") String cubeName, 
-			@PathParam("hierarchy") String hierarchyName)
+			@PathParam("hierarchy") String hierarchyName,
+      @PathParam("agency") Integer agency)
 		{
 		if ("null".equals(schemaName)) {
 			schemaName = "";
@@ -251,14 +262,15 @@ public class OlapDiscoverResource implements Serializable {
 		return null;
 	}
 
-	
+/* There was as double // here after hierarchies */	
 	@GET
-	@Path("/{connection}/{catalog}/{schema}/{cube}/hierarchies/")
+	@Path("/{connection}/{catalog}/{schema}/{cube}/hierarchies/{agency}")
     @Produces({"application/json" })
      public List<SaikuHierarchy> getCubeHierarchies(@PathParam("connection") String connectionName, 
     		 									@PathParam("catalog") String catalogName, 
     		 									@PathParam("schema") String schemaName, 
-    		 									@PathParam("cube") String cubeName) {
+    		 									@PathParam("cube") String cubeName,
+                          @PathParam("agency") Integer agency) {
 		if ("null".equals(schemaName)) {
 			schemaName = "";
 		}
@@ -271,13 +283,16 @@ public class OlapDiscoverResource implements Serializable {
 		return new ArrayList<SaikuHierarchy>();
 	}
 	
+/* There was as double // here after measures */	
 	@GET
-	@Path("/{connection}/{catalog}/{schema}/{cube}/measures/")
+	@Path("/{connection}/{catalog}/{schema}/{cube}/measures/{agency}")
     @Produces({"application/json" })
      public List<SaikuMember> getCubeMeasures(@PathParam("connection") String connectionName, 
     		 									@PathParam("catalog") String catalogName, 
     		 									@PathParam("schema") String schemaName, 
-    		 									@PathParam("cube") String cubeName) {
+    		 									@PathParam("cube") String cubeName,
+                          @PathParam("agency") Integer agency) {
+
 		if ("null".equals(schemaName)) {
 			schemaName = "";
 		}
@@ -296,13 +311,15 @@ public class OlapDiscoverResource implements Serializable {
 	 */
 	@GET
 	@Produces({"application/json" })
-	@Path("/{connection}/{catalog}/{schema}/{cube}/member/{member}")
+	@Path("/{connection}/{catalog}/{schema}/{cube}/member/{member}/{agency}")
 	public SaikuMember getMember(
 			@PathParam("connection") String connectionName, 
 			@PathParam("catalog") String catalogName, 
 			@PathParam("schema") String schemaName, 
 			@PathParam("cube") String cubeName, 
-			@PathParam("member") String memberName)
+			@PathParam("member") String memberName,
+      @PathParam("agency") Integer agency)
+
 	{
 		if ("null".equals(schemaName)) {
 			schemaName = "";
@@ -322,13 +339,14 @@ public class OlapDiscoverResource implements Serializable {
 	 */
 	@GET
 	@Produces({"application/json" })
-	@Path("/{connection}/{catalog}/{schema}/{cube}/member/{member}/children")
+	@Path("/{connection}/{catalog}/{schema}/{cube}/member/{member}/children/{agency}")
 	public List<SaikuMember> getMemberChildren(
 			@PathParam("connection") String connectionName, 
 			@PathParam("catalog") String catalogName, 
 			@PathParam("schema") String schemaName, 
 			@PathParam("cube") String cubeName, 
-			@PathParam("member") String memberName)
+			@PathParam("member") String memberName,
+      @PathParam("agency") Integer agency )
 	{
 		if ("null".equals(schemaName)) {
 			schemaName = "";
