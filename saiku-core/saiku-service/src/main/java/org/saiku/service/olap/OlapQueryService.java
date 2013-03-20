@@ -46,6 +46,7 @@ import org.olap4j.mdx.SelectNode;
 import org.olap4j.mdx.parser.impl.DefaultMdxParserImpl;
 import org.olap4j.metadata.Cube;
 import org.olap4j.metadata.Hierarchy;
+import org.olap4j.metadata.Property;
 import org.olap4j.metadata.Level;
 import org.olap4j.metadata.Member;
 import org.olap4j.query.Query;
@@ -485,14 +486,18 @@ public class OlapQueryService implements Serializable {
 		QueryDimension dimension = query.getDimension(dimensionName);
 		final Selection.Operator selectionMode = Selection.Operator.valueOf(selectionType);
 		try {
+
 			Selection sel = dimension.createSelection(selectionMode, memberList);
+
 			if (dimension.getInclusions().contains(sel)) {
 				dimension.getInclusions().remove(sel);
 			}
 			if (memberposition < 0) {
 				memberposition = dimension.getInclusions().size();
 			}
+
 			dimension.getInclusions().add(memberposition, sel);
+
 			return true;
 		} catch (OlapException e) {
 			throw new SaikuServiceException("Cannot include member query ("+queryName+") dimension (" + dimensionName + ") member ("+
@@ -517,17 +522,47 @@ public class OlapQueryService implements Serializable {
 		}
 	}
 
-	public boolean includeLevel(String queryName, String dimensionName, String uniqueHierarchyName, String uniqueLevelName) {
+	public boolean includeLevel(String queryName, String dimensionName, String uniqueHierarchyName, String uniqueLevelName, Integer agency) throws OlapException {
 		IQuery query = getIQuery(queryName);
 		QueryDimension dimension = query.getDimension(dimensionName);
 		for (Hierarchy hierarchy : dimension.getDimension().getHierarchies()) {
 			if (hierarchy.getUniqueName().equals(uniqueHierarchyName)) {
 				for (Level level : hierarchy.getLevels()) {
 					if (level.getUniqueName().equals(uniqueLevelName)) {
-						Selection sel = dimension.createSelection(level);
+
+
+            for (Member m : level.getMembers()) {
+
+              int mark = 0;
+              int valid = 1;
+
+              for (Property p : m.getProperties()) {
+                if ((p.getName().equals("agencyid") && Integer.parseInt(m.getPropertyValue(p).toString()) == agency) ||
+                    (agency == 0))
+                    {
+                  mark = 1;
+                }
+                if (p.getName().equals("agencyid")) {
+                  valid = 0;
+                }
+              }
+
+              if (valid == 1 || (valid == 0 && mark == 1)) {
+
+						    Selection sel = dimension.createSelection(m);
+						    if (!dimension.getInclusions().contains(sel)) {
+							    dimension.include(m);
+						    }
+
+              }
+
+            }
+
+						/*Selection sel = dimension.createSelection(level);
 						if (!dimension.getInclusions().contains(sel)) {
 							dimension.include(level);
-						}
+						}*/
+
 						return true;
 					}
 				}

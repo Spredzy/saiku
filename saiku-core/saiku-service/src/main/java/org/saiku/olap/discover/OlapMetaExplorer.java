@@ -313,6 +313,9 @@ public class OlapMetaExplorer {
             for (Level lvl : h.getLevels()) {
               if (lvl.getUniqueName().equals(level) || lvl.getName().equals(level)) {
 
+                System.out.println("[getAllMembers][enter]...");
+                System.out.println("Members # : " + lvl.getMembers().size());
+
                 List<Member> filteredMembers = new ArrayList<Member>();
 
                 for (Member m : lvl.getMembers()) {
@@ -324,14 +327,19 @@ public class OlapMetaExplorer {
                 }
 
                 if (agency == 0 || filteredMembers.size() == 0) {
+                  System.out.println("[getAllMembers][exit1]...");
                   return (ObjectUtil.convertMembers(lvl.getMembers()));
                 } else {
+                  System.out.println("[getAllMembers][exit2]...");
+                  System.out.println("Members # : " + filteredMembers.size());
                   return (ObjectUtil.convertMembers(filteredMembers));
                 }
 
               }
             }
           } else {
+                System.out.println("[getAllMembers][enter]...");
+                System.out.println("Members # : " + l.getMembers().size());
                 List<Member> filteredMembers = new ArrayList<Member>();
 
                 for (Member m : l.getMembers()) {
@@ -343,8 +351,11 @@ public class OlapMetaExplorer {
                 }
 
                 if (agency == 0 || filteredMembers.size() == 0) {
+                  System.out.println("[getAllMembers][exit1]...");
                   return (ObjectUtil.convertMembers(l.getMembers()));
                 } else {
+                  System.out.println("[getAllMembers][exit2]...");
+                  System.out.println("Members # : " + filteredMembers.size());
                   return (ObjectUtil.convertMembers(filteredMembers));
                 }
           }
